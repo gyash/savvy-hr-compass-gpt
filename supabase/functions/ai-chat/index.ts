@@ -22,6 +22,8 @@ serve(async (req) => {
 
     const { message, provider = 'openai', model = 'gpt-4o-mini', includeKnowledgeBase = true } = await req.json();
 
+    console.log(`Processing chat request with provider: ${provider}, model: ${model}`);
+
     let knowledgeContext = '';
     if (includeKnowledgeBase) {
       const { data: knowledge } = await supabaseClient
@@ -58,6 +60,7 @@ Always provide practical, region-appropriate advice and cite relevant regulation
         throw new Error('OpenAI API key not configured');
       }
 
+      console.log('Making request to OpenAI API...');
       response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -75,6 +78,12 @@ Always provide practical, region-appropriate advice and cite relevant regulation
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('OpenAI API error:', errorData);
+        throw new Error(`OpenAI API error: ${response.status} ${errorData}`);
+      }
+
       const data = await response.json();
       const aiResponse = data.choices[0].message.content;
 
@@ -87,6 +96,7 @@ Always provide practical, region-appropriate advice and cite relevant regulation
         throw new Error('Gemini API key not configured');
       }
 
+      console.log('Making request to Gemini API...');
       response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
         method: 'POST',
         headers: {
@@ -105,6 +115,12 @@ Always provide practical, region-appropriate advice and cite relevant regulation
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Gemini API error:', errorData);
+        throw new Error(`Gemini API error: ${response.status} ${errorData}`);
+      }
+
       const data = await response.json();
       const aiResponse = data.candidates[0].content.parts[0].text;
 
@@ -112,6 +128,8 @@ Always provide practical, region-appropriate advice and cite relevant regulation
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    throw new Error('Invalid AI provider specified');
 
   } catch (error) {
     console.error('Error in ai-chat function:', error);
