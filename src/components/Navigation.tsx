@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MessageCircle, BookOpen, Users, Brain, User, Upload } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 
 interface NavigationProps {
   currentPage: string;
@@ -21,7 +22,7 @@ interface NavigationProps {
 
 const Navigation = ({ currentPage, onPageChange }: NavigationProps) => {
   const { user, signOut } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const navItems = [
     { id: 'chat', label: 'AI Chat', icon: MessageCircle },
@@ -69,7 +70,7 @@ const Navigation = ({ currentPage, onPageChange }: NavigationProps) => {
                 {user?.user_metadata?.full_name}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/profile')}>
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
                 Profile
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => signOut()}>
@@ -78,7 +79,7 @@ const Navigation = ({ currentPage, onPageChange }: NavigationProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <Button onClick={() => router.push('/login')}>Login</Button>
+          <Button onClick={() => navigate('/auth')}>Login</Button>
         )}
       </div>
     </nav>
