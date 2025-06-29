@@ -1,14 +1,18 @@
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSeparator 
-} from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut, MessageCircle, BookOpen, Users, Brain } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { MessageCircle, BookOpen, Users, Brain, User, Upload } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface NavigationProps {
   currentPage: string;
@@ -17,73 +21,65 @@ interface NavigationProps {
 
 const Navigation = ({ currentPage, onPageChange }: NavigationProps) => {
   const { user, signOut } = useAuth();
+  const router = useRouter();
 
-  const navigationItems = [
+  const navItems = [
     { id: 'chat', label: 'AI Chat', icon: MessageCircle },
-    { id: 'knowledge', label: 'Knowledge Base', icon: BookOpen },
-    { id: 'forum', label: 'Community Forum', icon: Users },
+    { id: 'documents', label: 'Smart Docs', icon: Upload },
+    { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
+    { id: 'forum', label: 'Community', icon: Users },
     { id: 'training', label: 'AI Training', icon: Brain },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   return (
-    <nav className="bg-white border-b shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-8">
-            <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-blue-900">HR AI Companion</h1>
-            </div>
-            <div className="flex space-x-4">
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Button
-                    key={item.id}
-                    variant={currentPage === item.id ? "default" : "ghost"}
-                    onClick={() => onPageChange(item.id)}
-                    className="flex items-center space-x-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Button>
-                );
-              })}
-            </div>
+    <nav className="bg-white/80 backdrop-blur-sm border-b border-orange-100 shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+        <div className="flex items-center">
+          <h1 className="text-xl font-bold text-orange-700 mr-6">Global HR</h1>
+          <div className="flex items-center space-x-4">
+            {navItems.map((item) => (
+              <Button
+                key={item.id}
+                variant={currentPage === item.id ? "secondary" : "ghost"}
+                onClick={() => onPageChange(item.id)}
+                className={cn(
+                  "gap-2 rounded-full",
+                  currentPage === item.id ? "bg-orange-100 text-orange-700 hover:bg-orange-200" : "text-gray-600 hover:text-gray-800"
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Button>
+            ))}
           </div>
-
+        </div>
+        {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {user?.email?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
+                  <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.user_metadata?.full_name} />
+                  <AvatarFallback>{user?.user_metadata?.full_name?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end">
-              <div className="flex items-center justify-start gap-2 p-2">
-                <div className="flex flex-col space-y-1 leading-none">
-                  <p className="font-medium">{user?.email}</p>
-                </div>
-              </div>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel>
+                {user?.user_metadata?.full_name}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onPageChange('profile')}>
-                <User className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => router.push('/profile')}>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onPageChange('settings')}>
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
+              <DropdownMenuItem onClick={() => signOut()}>
+                Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        ) : (
+          <Button onClick={() => router.push('/login')}>Login</Button>
+        )}
       </div>
     </nav>
   );
