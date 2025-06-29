@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -9,7 +8,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut, MessageCircle, BookOpen, Users } from 'lucide-react';
+import { User, Settings, LogOut, MessageCircle, BookOpen, Users, Brain } from 'lucide-react';
 
 interface NavigationProps {
   currentPage: string;
@@ -23,6 +22,7 @@ const Navigation = ({ currentPage, onPageChange }: NavigationProps) => {
     { id: 'chat', label: 'AI Chat', icon: MessageCircle },
     { id: 'knowledge', label: 'Knowledge Base', icon: BookOpen },
     { id: 'forum', label: 'Community Forum', icon: Users },
+    { id: 'training', label: 'AI Training', icon: Brain },
   ];
 
   return (

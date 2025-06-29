@@ -2,10 +2,11 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import Navigation from './Navigation';
-import ChatInterface from './ChatInterface';
+import EnhancedChatInterface from './EnhancedChatInterface';
 import KnowledgeBase from './KnowledgeBase';
 import Forum from './Forum';
 import Profile from './Profile';
+import AITraining from './AITraining';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -14,15 +15,17 @@ const Dashboard = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'chat':
-        return <ChatInterface userLocation="Global HR Platform" />;
+        return <EnhancedChatInterface userLocation="Global HR Platform" />;
       case 'knowledge':
         return <KnowledgeBase />;
       case 'forum':
         return <Forum />;
       case 'profile':
         return <Profile />;
+      case 'training':
+        return <AITraining />;
       default:
-        return <ChatInterface userLocation="Global HR Platform" />;
+        return <EnhancedChatInterface userLocation="Global HR Platform" />;
     }
   };
 
